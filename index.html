@@ -34,7 +34,6 @@
     <div id="hasil" role="status" aria-live="polite"></div>
   </div>
   <script>
-    // Isi dengan URL API Gateway masing-masing peserta.
     const API_URL = 'https://v0jelncgw6.execute-api.us-east-1.amazonaws.com/penerima';
     const form = document.getElementById('formLaporan');
     const hasil = document.getElementById('hasil');
@@ -45,21 +44,24 @@
       const nama = document.getElementById('nama').value.trim();
       const lokasi = document.getElementById('lokasi').value.trim();
       const keterangan = document.getElementById('masalah').value.trim();
+      
       if (!nama || !lokasi || !keterangan) {
         hasil.textContent = 'Semua kolom wajib diisi.';
         return;
       }
-      if (!API_URL) {
-        hasil.textContent = 'Alamat API Gateway belum diisi pada file HTML.';
-        return;
-      }
+      
       tombol.disabled = true;
       hasil.textContent = 'Mengirim laporan...';
       try {
         const res = await fetch(API_URL, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ nama, masalah: 'Lokasi: ' + lokasi + '\nKerusakan: ' + keterangan })
+          // MENGIRIM 3 VARIABEL TERPISAH: nama, lokasi, keterangan
+          body: JSON.stringify({ 
+            nama: nama, 
+            lokasi: lokasi, 
+            keterangan: keterangan 
+          })
         });
         const data = await res.json();
         if (!res.ok || data.status !== 'DITERIMA') throw new Error(data.pesan || 'Pengiriman gagal.');
